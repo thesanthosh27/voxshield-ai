@@ -1,4 +1,4 @@
-"""VoxShield AI — Production FastAPI Backend Application (Per-User Accounts & SQLite Storage)."""
+"""VoxShield AI — Production FastAPI Backend Application (Supabase Cloud Auth & Isolated Biometrics)."""
 
 import os
 import time
@@ -27,18 +27,19 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.audio_utils import decode_audio_bytes, simulate_telephony, generate_spectrogram_b64
 from app.ai_engine import AIEngine
+from app.supabase_client import (
+    verify_user_token,
+    get_user_voiceprints,
+    get_voiceprint_by_id,
+    insert_voiceprint,
+    delete_voiceprint,
+    insert_incident,
+    get_user_incidents,
+)
 from app.storage import (
     create_user,
     authenticate_user,
-    get_user_by_token,
     delete_session,
-    get_voiceprints_by_user,
-    get_voiceprint_by_id,
-    add_voiceprint,
-    delete_voiceprint,
-    get_incidents_by_user,
-    add_incident,
-    get_contact_by_id
 )
 
 engine = AIEngine()
@@ -59,21 +60,15 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="VoxShield AI Forensic Engine",
     description="Real-Time AI Voice Cloning Detection & Forensic Verification API",
-    version="2.1.0",
+    version="2.2.0",
     lifespan=lifespan
 )
 
-# CORS setup for Next.js frontend
+# CORS setup for Vercel (https://*.vercel.app), Cloudflare Tunnel, and local development
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://localhost:3001",
-        "http://127.0.0.1:3000",
-        "http://127.0.0.1:3001",
-        "*"
-    ],
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -94,13 +89,13 @@ class LoginRequest(BaseModel):
 
 
 def get_current_user_optional(authorization: Optional[str] = Header(None)) -> Optional[Dict[str, Any]]:
-    """Extracts authenticated user if Bearer token is provided."""
+    """Extracts and verifies authenticated user if Bearer token is provided."""
     if not authorization:
         return None
     token = authorization.replace("Bearer ", "").strip()
     if not token:
         return None
-    return get_user_by_token(token)
+    return verify_user_token(token)
 
 
 def get_current_user(authorization: Optional[str] = Header(None)) -> Dict[str, Any]:
@@ -136,7 +131,7 @@ async def health_check():
 
 
 # -------------------------------------------------------------
-# User Authentication Endpoints
+# User Authentication Endpoints (Dual Mode: Supabase & Local Fallback)
 # -------------------------------------------------------------
 @app.post("/api/auth/register")
 async def register(req: RegisterRequest):
@@ -197,12 +192,12 @@ async def enroll_contact(
         embedding = engine.extract_embedding(audio, sr=16000)
         contact_id = f"cnt_{uuid.uuid4().hex[:8]}"
 
-        contact = add_voiceprint(
+        contact = insert_voiceprint(
             user_id=current_user["id"],
-            contact_id=contact_id,
             name=name.strip(),
             relation=relation.strip(),
-            embedding=embedding
+            embedding=embedding,
+            contact_id=contact_id
         )
 
         return {
@@ -219,7 +214,7 @@ async def enroll_contact(
 @app.get("/api/contacts")
 async def get_contacts(current_user: Dict[str, Any] = Depends(get_current_user)):
     """Retrieves all registered trusted contacts belonging to the authenticated user."""
-    contacts = get_voiceprints_by_user(current_user["id"])
+    contacts = get_user_voiceprints(current_user["id"])
     summary = []
     for c in contacts:
         summary.append({
@@ -320,17 +315,14 @@ async def analyze_file(
         real_prob = spoof_res["real_prob"]
         timeline = spoof_res["timeline"]
 
-        # Step 4: Layer 2 - Voiceprint Verification (Scoped by current_user)
+        # Step 4: Layer 2 - Voiceprint Verification (Scoped strictly to current_user)
         voiceprint_similarity: Optional[float] = None
         claimed_contact = None
         has_claimed = bool(claimed_contact_id and claimed_contact_id.strip())
 
-        if has_claimed:
+        if has_claimed and current_user:
             cid = claimed_contact_id.strip()
-            if current_user:
-                claimed_contact = get_voiceprint_by_id(current_user["id"], cid)
-            else:
-                claimed_contact = get_contact_by_id(cid)
+            claimed_contact = get_voiceprint_by_id(current_user["id"], cid)
 
             if claimed_contact and claimed_contact.get("embedding"):
                 current_emb = engine.extract_embedding(audio, sr=16000)
@@ -371,7 +363,7 @@ async def analyze_file(
                 "forensic_hash": fusion["forensic_hash"],
                 "telemetry": telemetry
             }
-            add_incident(user_id=current_user["id"], incident=incident)
+            insert_incident(user_id=current_user["id"], payload=incident)
 
         return {
             "threat_state": fusion["threat_state"],
@@ -407,7 +399,7 @@ async def analyze_file(
 @app.get("/api/incidents")
 async def get_incidents(current_user: Dict[str, Any] = Depends(get_current_user)):
     """Retrieves forensic incident audit ledger for authenticated user."""
-    return get_incidents_by_user(current_user["id"])
+    return get_user_incidents(current_user["id"])
 
 
 # -------------------------------------------------------------
@@ -424,7 +416,7 @@ async def live_analyze_stream(
     simulate_telephony_channel = False
 
     # Resolve authenticated user from query parameter or initial config frame
-    current_user: Optional[Dict[str, Any]] = get_user_by_token(token) if token else None
+    current_user: Optional[Dict[str, Any]] = verify_user_token(token) if token else None
 
     try:
         while True:
@@ -440,7 +432,7 @@ async def live_analyze_stream(
                         simulate_telephony_channel = bool(cfg.get("simulate_telephony", False))
                         config_token = cfg.get("token")
                         if config_token and not current_user:
-                            current_user = get_user_by_token(config_token)
+                            current_user = verify_user_token(config_token)
 
                         await websocket.send_json({
                             "type": "config_ack",
@@ -507,12 +499,9 @@ async def live_analyze_stream(
                     # Layer 2: Voiceprint Match (Scoped strictly by user)
                     voiceprint_similarity: Optional[float] = None
                     has_claimed = bool(claimed_contact_id and claimed_contact_id.strip())
-                    if has_claimed:
+                    if has_claimed and current_user:
                         cid = claimed_contact_id.strip()
-                        if current_user:
-                            contact = get_voiceprint_by_id(current_user["id"], cid)
-                        else:
-                            contact = get_contact_by_id(cid)
+                        contact = get_voiceprint_by_id(current_user["id"], cid)
 
                         if contact and contact.get("embedding"):
                             curr_emb = engine.extract_embedding(audio, sr=16000)
@@ -551,7 +540,7 @@ async def live_analyze_stream(
                             "challenges": fusion["liveness_challenges"],
                             "forensic_hash": fusion["forensic_hash"]
                         }
-                        add_incident(user_id=current_user["id"], incident=incident)
+                        insert_incident(user_id=current_user["id"], payload=incident)
 
                     # Stream back live result
                     await websocket.send_json({

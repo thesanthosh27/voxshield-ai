@@ -1,11 +1,22 @@
 "use client";
 
 import React, { useState } from "react";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
+import { setAccessToken } from "@/lib/apiConfig";
 import { apiLogin, apiRegister } from "@/lib/api";
 import { User } from "@/types";
 import { TiltPanel } from "./TiltPanel";
 import { MagneticButton } from "./MagneticButton";
-import { ShieldCheck, Lock, Mail, User as UserIcon, ArrowRight, ShieldAlert, Sparkles } from "lucide-react";
+import {
+  ShieldCheck,
+  Lock,
+  Mail,
+  User as UserIcon,
+  ShieldAlert,
+  AlertCircle,
+  KeyRound,
+  CheckCircle2,
+} from "lucide-react";
 
 interface AuthViewProps {
   onAuthSuccess: (user: User) => void;
@@ -18,10 +29,12 @@ export const AuthView: React.FC<AuthViewProps> = ({ onAuthSuccess }) => {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [infoMsg, setInfoMsg] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
+    setInfoMsg(null);
 
     if (isRegister && !name.trim()) {
       setErrorMsg("Please enter your full name.");
@@ -37,16 +50,72 @@ export const AuthView: React.FC<AuthViewProps> = ({ onAuthSuccess }) => {
     }
 
     setIsLoading(true);
+
     try {
-      if (isRegister) {
-        const res = await apiRegister(name, email, password);
-        onAuthSuccess(res.user);
+      // 1. Primary Authentication Path: Supabase Auth
+      if (isSupabaseConfigured && supabase) {
+        if (isRegister) {
+          const { data, error } = await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+              data: {
+                full_name: name.trim(),
+              },
+            },
+          });
+
+          if (error) {
+            throw error;
+          }
+
+          if (data.session) {
+            setAccessToken(data.session.access_token);
+            const userObj: User = {
+              id: data.user?.id || `usr_${Date.now()}`,
+              name: data.user?.user_metadata?.full_name || name.trim(),
+              email: data.user?.email || email,
+            };
+            onAuthSuccess(userObj);
+          } else if (data.user) {
+            // Confirmation email sent
+            setInfoMsg(
+              "Account created! Please check your email to confirm your account, or sign in if confirmation is disabled."
+            );
+          }
+        } else {
+          const { data, error } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+          });
+
+          if (error) {
+            throw error;
+          }
+
+          if (data.session && data.user) {
+            setAccessToken(data.session.access_token);
+            const userObj: User = {
+              id: data.user.id,
+              name: data.user.user_metadata?.full_name || email.split("@")[0],
+              email: data.user.email || email,
+            };
+            onAuthSuccess(userObj);
+          }
+        }
       } else {
-        const res = await apiLogin(email, password);
-        onAuthSuccess(res.user);
+        // 2. Offline / Self-Hosted Fallback when Supabase keys are not in environment
+        if (isRegister) {
+          const res = await apiRegister(name, email, password);
+          onAuthSuccess(res.user);
+        } else {
+          const res = await apiLogin(email, password);
+          onAuthSuccess(res.user);
+        }
       }
     } catch (err: unknown) {
-      setErrorMsg(err instanceof Error ? err.message : String(err));
+      const msg = err instanceof Error ? err.message : String(err);
+      setErrorMsg(msg);
     } finally {
       setIsLoading(false);
     }
@@ -94,7 +163,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ onAuthSuccess }) => {
                   Isolated Biometric Voice Vault
                 </span>
                 <span className="font-sans text-xs text-studio-dim">
-                  Private per-user account storage keeps your family voiceprints completely segregated.
+                  Cloud-secured user accounts keep your family voiceprints completely segregated.
                 </span>
               </div>
             </div>
@@ -104,6 +173,20 @@ export const AuthView: React.FC<AuthViewProps> = ({ onAuthSuccess }) => {
         {/* Right Column: High-Craft Auth Card */}
         <div className="lg:col-span-6">
           <TiltPanel className="p-7 sm:p-9 border border-studio-border bg-studio-card/95 shadow-2xl backdrop-blur-xl">
+            {/* Supabase Notice if missing environment credentials */}
+            {!isSupabaseConfigured && (
+              <div className="mb-5 p-3 rounded-xl bg-studio-elevated border border-studio-border text-xs font-sans text-studio-muted flex items-start gap-2.5">
+                <KeyRound className="w-4 h-4 text-threat-amber shrink-0 mt-0.5" />
+                <div className="space-y-0.5">
+                  <span className="font-semibold text-studio-text block">Local Mode Active</span>
+                  <span className="text-[11px] text-studio-dim leading-relaxed block">
+                    Supabase credentials not detected. Operating with local authentication. Add{" "}
+                    <code className="text-studio-muted">NEXT_PUBLIC_SUPABASE_URL</code> to activate cloud auth.
+                  </span>
+                </div>
+              </div>
+            )}
+
             {/* Mode Toggle Header */}
             <div className="flex items-center justify-between pb-6 border-b border-studio-border/60 mb-6">
               <div>
@@ -123,6 +206,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ onAuthSuccess }) => {
                   onClick={() => {
                     setIsRegister(false);
                     setErrorMsg(null);
+                    setInfoMsg(null);
                   }}
                   className={`px-3 py-1.5 rounded-lg text-xs font-sans font-medium transition-all cursor-pointer ${
                     !isRegister
@@ -137,6 +221,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ onAuthSuccess }) => {
                   onClick={() => {
                     setIsRegister(true);
                     setErrorMsg(null);
+                    setInfoMsg(null);
                   }}
                   className={`px-3 py-1.5 rounded-lg text-xs font-sans font-medium transition-all cursor-pointer ${
                     isRegister
@@ -160,10 +245,10 @@ export const AuthView: React.FC<AuthViewProps> = ({ onAuthSuccess }) => {
                     <UserIcon className="w-4 h-4 text-studio-dim absolute left-3.5 top-1/2 -translate-y-1/2" />
                     <input
                       type="text"
-                      placeholder="e.g. Santhosh"
+                      placeholder="e.g. Alex Vance"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="w-full bg-studio-elevated border border-studio-border rounded-xl pl-10 pr-4 py-2.5 text-xs font-sans text-studio-text focus:outline-none focus:border-white/30 transition-colors"
+                      className="w-full bg-studio-elevated border border-studio-border rounded-xl pl-10 pr-4 py-2.5 text-xs font-sans text-studio-text placeholder:text-studio-dim focus:outline-none focus:border-white/20 transition-colors"
                     />
                   </div>
                 </div>
@@ -177,10 +262,10 @@ export const AuthView: React.FC<AuthViewProps> = ({ onAuthSuccess }) => {
                   <Mail className="w-4 h-4 text-studio-dim absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <input
                     type="email"
-                    placeholder="name@company.com"
+                    placeholder="name@organization.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full bg-studio-elevated border border-studio-border rounded-xl pl-10 pr-4 py-2.5 text-xs font-sans text-studio-text focus:outline-none focus:border-white/30 transition-colors"
+                    className="w-full bg-studio-elevated border border-studio-border rounded-xl pl-10 pr-4 py-2.5 text-xs font-sans text-studio-text placeholder:text-studio-dim focus:outline-none focus:border-white/20 transition-colors"
                   />
                 </div>
               </div>
@@ -193,32 +278,42 @@ export const AuthView: React.FC<AuthViewProps> = ({ onAuthSuccess }) => {
                   <Lock className="w-4 h-4 text-studio-dim absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <input
                     type="password"
-                    placeholder="••••••••"
+                    placeholder="••••••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full bg-studio-elevated border border-studio-border rounded-xl pl-10 pr-4 py-2.5 text-xs font-sans text-studio-text focus:outline-none focus:border-white/30 transition-colors"
+                    className="w-full bg-studio-elevated border border-studio-border rounded-xl pl-10 pr-4 py-2.5 text-xs font-sans text-studio-text placeholder:text-studio-dim focus:outline-none focus:border-white/20 transition-colors"
                   />
                 </div>
               </div>
 
+              {/* Status & Error Messages */}
               {errorMsg && (
-                <div className="p-3 rounded-xl bg-threat-crimson/15 border border-threat-crimson/30 text-threat-crimson text-xs font-sans">
-                  {errorMsg}
+                <div className="p-3 rounded-xl bg-threat-crimson/15 border border-threat-crimson/30 text-threat-crimson text-xs font-sans flex items-start gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                  <span>{errorMsg}</span>
                 </div>
               )}
 
-              <div className="pt-2">
-                <MagneticButton
-                  variant="primary"
-                  disabled={isLoading}
-                  className="w-full text-sm py-3 justify-center"
-                >
-                  <span className="flex items-center justify-center gap-2">
-                    <span>{isLoading ? "Authenticating..." : isRegister ? "Create Account" : "Access Console"}</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </span>
-                </MagneticButton>
-              </div>
+              {infoMsg && (
+                <div className="p-3 rounded-xl bg-threat-emerald/15 border border-threat-emerald/30 text-threat-emerald text-xs font-sans flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />
+                  <span>{infoMsg}</span>
+                </div>
+              )}
+
+              <MagneticButton
+                variant="primary"
+                disabled={isLoading}
+                className="w-full mt-2 text-xs py-3"
+              >
+                {isLoading
+                  ? isRegister
+                    ? "Creating Account..."
+                    : "Authenticating..."
+                  : isRegister
+                  ? "Create Account"
+                  : "Sign In to VoxShield"}
+              </MagneticButton>
             </form>
           </TiltPanel>
         </div>

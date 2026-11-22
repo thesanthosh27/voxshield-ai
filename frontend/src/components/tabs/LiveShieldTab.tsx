@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { PcmWavRecorder, AudioInputMode } from "@/lib/pcmRecorder";
+import { PcmWavRecorder } from "@/lib/pcmRecorder";
 import { getLiveAnalyzeWebSocketUrl } from "@/lib/api";
 import { Contact, LiveTelemetryMessage, ThreatState } from "@/types";
 import { AudioSculpture3D } from "@/components/AudioSculpture3D";
@@ -10,8 +10,7 @@ import { TiltPanel } from "@/components/TiltPanel";
 import { MagneticButton } from "@/components/MagneticButton";
 import { SignalFlow } from "@/components/SignalFlow";
 import {
-  Mic,
-  MicOff,
+  PhoneOff,
   Radio,
   ShieldAlert,
   Fingerprint,
@@ -297,7 +296,7 @@ export const LiveShieldTab: React.FC<LiveShieldTabProps> = ({
               >
                 {isActive ? (
                   <span className="flex items-center gap-2">
-                    <MicOff className="w-4 h-4" /> Stop Protection
+                    <PhoneOff className="w-4 h-4" /> Stop Protection
                   </span>
                 ) : (
                   <span className="flex items-center gap-2">

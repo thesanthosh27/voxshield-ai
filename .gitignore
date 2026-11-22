@@ -13,9 +13,14 @@ frontend/.next/
 frontend/out/
 frontend/build/
 
-# Environment Variables & Logs
-*.log
+# Environment Variables & Secrets
+*.env
+*.env.*
 .env
 .env.local
+backend/.env
+frontend/.env
+frontend/.env.local
+*.log
 .DS_Store
 Thumbs.db
