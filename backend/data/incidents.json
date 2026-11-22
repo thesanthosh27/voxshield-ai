@@ -1,0 +1,275 @@
+[
+  {
+    "id": "inc_e8466ef7",
+    "timestamp": "2026-11-21T10:08:31.276567+00:00",
+    "threat_state": "CRITICAL_AI_CLONE",
+    "risk_score": 99.0,
+    "ai_score": 100.0,
+    "voiceprint_match": null,
+    "claimed_contact": null,
+    "matched_keywords": [
+      "urgent",
+      "transfer",
+      "bank",
+      "pin",
+      "money"
+    ],
+    "transcript": "Urgent, this is the bank fraud department. Your account is compromised, send your money transfer and pin immediately.",
+    "challenges": [
+      "Ask caller to tap their microphone twice and immediately spell their surname backwards (tests neural vocoder latency and audio dropout).",
+      "Ask an unscripted rapid-response question: 'What was the exact color of the first vehicle you ever bought?'"
+    ],
+    "forensic_hash": "44c1e04fdc83c85789a634c5c7d1566c60083440129087549d3a25de3b5155e9",
+    "telemetry": {
+      "snr_db": 60.0,
+      "spectral_flatness": 0.2022,
+      "pitch_variance": 918708.31,
+      "duration_sec": 8.7,
+      "zero_crossing_rate": 0.1395,
+      "rms_energy": 0.09103
+    }
+  },
+  {
+    "id": "inc_8e81fffe",
+    "timestamp": "2026-11-21T10:06:48.117525+00:00",
+    "threat_state": "CRITICAL_AI_CLONE",
+    "risk_score": 99.0,
+    "ai_score": 100.0,
+    "voiceprint_match": null,
+    "claimed_contact": null,
+    "matched_keywords": [
+      "urgent",
+      "transfer",
+      "bank"
+    ],
+    "transcript": "Hey, this is an urgent request from the CEO. Please approve the vendor bank transfer immediately and send me the verification code.",
+    "challenges": [
+      "Ask caller to tap their microphone twice and immediately spell their surname backwards (tests neural vocoder latency and audio dropout).",
+      "Ask an unscripted rapid-response question: 'What was the exact color of the first vehicle you ever bought?'"
+    ],
+    "forensic_hash": "2c38ede7465bfbb7e2e8fc0ddb4006a587c51328ec01221f60551645c6b61b83",
+    "telemetry": {
+      "snr_db": 60.0,
+      "spectral_flatness": 0.1714,
+      "pitch_variance": 1194252.75,
+      "duration_sec": 8.9,
+      "zero_crossing_rate": 0.1268,
+      "rms_energy": 0.09151
+    }
+  },
+  {
+    "id": "inc_222bb627",
+    "timestamp": "2026-11-21T09:39:34.009344+00:00",
+    "threat_state": "CRITICAL_AI_CLONE",
+    "risk_score": 99.0,
+    "ai_score": 100.0,
+    "voiceprint_match": null,
+    "claimed_contact": null,
+    "matched_keywords": [
+      "urgent",
+      "transfer",
+      "bank"
+    ],
+    "transcript": "Hey, this is an urgent request from the CEO. Please approve the vendor bank transfer immediately and send me the verification code.",
+    "challenges": [
+      "Ask caller to tap their microphone twice and immediately spell their surname backwards (tests neural vocoder latency and audio dropout).",
+      "Ask an unscripted rapid-response question: 'What was the exact color of the first vehicle you ever bought?'"
+    ],
+    "forensic_hash": "c576320fd0c5e860cfdcfb0ff660e666ee6bda768d8d94d3e2927df0b1d9dbc0",
+    "telemetry": {
+      "snr_db": 60.0,
+      "spectral_flatness": 0.1882,
+      "pitch_variance": 1226163.25,
+      "duration_sec": 8.9,
+      "zero_crossing_rate": 0.1272,
+      "rms_energy": 0.09151
+    }
+  },
+  {
+    "id": "inc_e4011e2b",
+    "timestamp": "2026-11-21T09:39:13.417117+00:00",
+    "threat_state": "CRITICAL_AI_CLONE",
+    "risk_score": 99.0,
+    "ai_score": 100.0,
+    "voiceprint_match": null,
+    "claimed_contact": null,
+    "matched_keywords": [
+      "urgent",
+      "transfer",
+      "bank"
+    ],
+    "transcript": "Hey, this is an urgent request from the CEO. Please approve the vendor bank transfer immediately and send me the verification code.",
+    "challenges": [
+      "Ask caller to tap their microphone twice and immediately spell their surname backwards (tests neural vocoder latency and audio dropout).",
+      "Ask an unscripted rapid-response question: 'What was the exact color of the first vehicle you ever bought?'"
+    ],
+    "forensic_hash": "898fd480841f3c6736204a3662c054b60c61537adbb43f85b5932263708080dc",
+    "telemetry": {
+      "snr_db": 60.0,
+      "spectral_flatness": 0.1882,
+      "pitch_variance": 1226163.25,
+      "duration_sec": 8.9,
+      "zero_crossing_rate": 0.1272,
+      "rms_energy": 0.09151
+    }
+  },
+  {
+    "id": "inc_80982fb4",
+    "timestamp": "2026-11-21T09:39:04.233483+00:00",
+    "threat_state": "CRITICAL_AI_CLONE",
+    "risk_score": 99.0,
+    "ai_score": 100.0,
+    "voiceprint_match": null,
+    "claimed_contact": null,
+    "matched_keywords": [],
+    "transcript": "Good afternoon everyone. The weather in Tamil Nadu is very pleasant today and we are working on our College Semester Project.",
+    "challenges": [
+      "Ask caller to tap their microphone twice and immediately spell their surname backwards (tests neural vocoder latency and audio dropout).",
+      "Ask an unscripted rapid-response question: 'What was the exact color of the first vehicle you ever bought?'"
+    ],
+    "forensic_hash": "240a79ca1e38ef355be572a7efac0b6e67ee73f667fc2f0f97c7c77f31f67a80",
+    "telemetry": {
+      "snr_db": 60.0,
+      "spectral_flatness": 0.0934,
+      "pitch_variance": 909896.56,
+      "duration_sec": 9.34,
+      "zero_crossing_rate": 0.0914,
+      "rms_energy": 0.15434
+    }
+  },
+  {
+    "id": "inc_0944367d",
+    "timestamp": "2026-11-21T09:38:45.222772+00:00",
+    "threat_state": "CRITICAL_AI_CLONE",
+    "risk_score": 99.0,
+    "ai_score": 99.72,
+    "voiceprint_match": null,
+    "claimed_contact": null,
+    "matched_keywords": [
+      "police",
+      "arrest",
+      "transfer",
+      "bank",
+      "money"
+    ],
+    "transcript": "Hello sir, I am calling from Cyber Crime Police Station. An arrest warrant is issued on your bank account. Share your UPIP in and transfer money now to avoid arrest.",
+    "challenges": [
+      "Ask caller to tap their microphone twice and immediately spell their surname backwards (tests neural vocoder latency and audio dropout).",
+      "Ask an unscripted rapid-response question: 'What was the exact color of the first vehicle you ever bought?'"
+    ],
+    "forensic_hash": "dc043ac72acdd18fc46683ce4dd83d301bb3109188bd6aff80b49abb6cdd1184",
+    "telemetry": {
+      "snr_db": 60.0,
+      "spectral_flatness": 0.1883,
+      "pitch_variance": 1164104.88,
+      "duration_sec": 13.42,
+      "zero_crossing_rate": 0.1557,
+      "rms_energy": 0.08477
+    }
+  },
+  {
+    "id": "inc_0d310397",
+    "timestamp": "2026-11-21T09:36:37.494176+00:00",
+    "threat_state": "CRITICAL_AI_CLONE",
+    "risk_score": 99.0,
+    "ai_score": 100.0,
+    "voiceprint_match": null,
+    "claimed_contact": null,
+    "matched_keywords": [],
+    "transcript": "Attention, this is an automated artificial intelligence voice calling to verify your account.",
+    "challenges": [
+      "Ask caller to tap their microphone twice and immediately spell their surname backwards (tests neural vocoder latency and audio dropout).",
+      "Ask an unscripted rapid-response question: 'What was the exact color of the first vehicle you ever bought?'"
+    ],
+    "forensic_hash": "576313d756fe19fbd8454ba76a7978ac539ba401d69ea9ee9f04361bf5f9a80d",
+    "telemetry": {
+      "snr_db": 60.0,
+      "spectral_flatness": 0.1507,
+      "pitch_variance": 1030390.31,
+      "duration_sec": 6.19,
+      "zero_crossing_rate": 0.1432,
+      "rms_energy": 0.09947
+    }
+  },
+  {
+    "id": "inc_04c1165c",
+    "timestamp": "2026-11-21T09:35:48.955598+00:00",
+    "threat_state": "CRITICAL_AI_CLONE",
+    "risk_score": 99.0,
+    "ai_score": 100.0,
+    "voiceprint_match": null,
+    "claimed_contact": null,
+    "matched_keywords": [
+      "otp",
+      "urgent",
+      "accident",
+      "transfer"
+    ],
+    "transcript": "Dad, I met with a small bike accident. My phone battery died, I am calling from a strangers phone. Please transfer 25,000 rupees urgent via GP or tell me the OTP immediately.",
+    "challenges": [
+      "Ask caller to tap their microphone twice and immediately spell their surname backwards (tests neural vocoder latency and audio dropout).",
+      "Ask an unscripted rapid-response question: 'What was the exact color of the first vehicle you ever bought?'"
+    ],
+    "forensic_hash": "ae21ef7bf6022930d5ed3f3a587d88e5ec9a6ed2a2e7dfce5f8cc7eb340e622a",
+    "telemetry": {
+      "snr_db": 60.0,
+      "spectral_flatness": 0.1448,
+      "pitch_variance": 1071838.0,
+      "duration_sec": 15.74,
+      "zero_crossing_rate": 0.1117,
+      "rms_energy": 0.14147
+    }
+  },
+  {
+    "id": "inc_164e635b",
+    "timestamp": "2026-11-21T08:39:40.809737+00:00",
+    "threat_state": "CRITICAL_AI_CLONE",
+    "risk_score": 99.0,
+    "ai_score": 100.0,
+    "voiceprint_match": null,
+    "claimed_contact": null,
+    "matched_keywords": [],
+    "transcript": "Attention, this is an automated artificial intelligence voice calling to verify your account.",
+    "challenges": [
+      "Ask caller to tap their microphone twice and immediately spell their surname backwards (tests neural vocoder latency and audio dropout).",
+      "Ask an unscripted rapid-response question: 'What was the exact color of the first vehicle you ever bought?'"
+    ],
+    "forensic_hash": "e7e4466e2e1795a2cffba8d2650b8bceb753d2bf3c3ebfd715185cecd8d4e63a",
+    "telemetry": {
+      "snr_db": 60.0,
+      "spectral_flatness": 0.1507,
+      "pitch_variance": 1030390.31,
+      "duration_sec": 6.19,
+      "zero_crossing_rate": 0.1432,
+      "rms_energy": 0.09947
+    }
+  },
+  {
+    "incident_id": "39e076d1-92e4-4343-ab2f-89ed04d024dd",
+    "timestamp": "2026-11-20T18:25:25.006133+00:00",
+    "threat_state": "CRITICAL_AI_CLONE",
+    "risk_score": 99.0,
+    "ai_score": 100.0,
+    "voiceprint_match": 100.0,
+    "transcript": "",
+    "keywords": [],
+    "sha256_hash": "ca79a72a7907de61e253f9017b93f8f9ade640de2b66ecd26c4e1927a244cdae",
+    "latency_ms": 4564.57,
+    "claimed_contact": "Arjun Sharma",
+    "telephony_simulated": false
+  },
+  {
+    "incident_id": "58095630-1c61-4e72-bf67-1c2fe33bfb11",
+    "timestamp": "2026-11-21T07:04:15.446357+00:00",
+    "threat_state": "CRITICAL_AI_CLONE",
+    "risk_score": 99.0,
+    "ai_score": 100.0,
+    "voiceprint_match": null,
+    "transcript": "Hello, this is an Artificial Intelligence Voice Cloning System calling you.",
+    "keywords": [],
+    "sha256_hash": "eb5955372e64b8157c42383f3ac848cd1f42aea63659d5ba73d277d6c5e5687f",
+    "latency_ms": 779.75,
+    "claimed_contact": null,
+    "telephony_simulated": false
+  }
+]
