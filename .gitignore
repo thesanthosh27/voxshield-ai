@@ -24,3 +24,13 @@ frontend/.env.local
 *.log
 .DS_Store
 Thumbs.db
+
+backend/.env
+frontend/.env.local
+backend/venv/
+backend/ai_models/
+models_zip/
+frontend/node_modules/
+frontend/.next/
+__pycache__/
+logo/ 
